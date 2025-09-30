@@ -1,6 +1,8 @@
 package db;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -34,12 +36,16 @@ public class DB {
     }
 
     private static Properties loadProperties() {
-        try(FileInputStream fs = new FileInputStream("db.properties")){
+        try (InputStream fs = DB.class.getClassLoader().getResourceAsStream("db.properties")) {
             Properties props = new Properties();
+            if (fs == null) {
+                throw new FileNotFoundException("Arquivo db.properties não encontrado no classpath");
+            }
             props.load(fs);
             return props;
         } catch (Exception e) {
             throw new DbException(e.getMessage());
         }
     }
+
 }
